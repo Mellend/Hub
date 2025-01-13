@@ -1,7 +1,6 @@
 package ru.vayflare.hub;
 
 import com.google.inject.Inject;
-import com.velocitypowered.api.command.BrigadierCommand;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.command.SimpleCommand;
