@@ -36,22 +36,30 @@ public class HubCommand implements SimpleCommand {
      */
     @Override
     public void execute(final Invocation invocation) {
-        if (invocation.source() instanceof Player player) {
-            RegisteredServer toConnect = this.server.getServer("lobby").orElse(null);
-            if (toConnect == null) {
-                invocation.source().sendMessage(Component.text("Lobby server not found.", NamedTextColor.RED));
-                return;
-            }
-            player.createConnectionRequest(toConnect).connect().thenAccept(result -> {
-                if (result.isSuccessful()) {
-                    invocation.source().sendMessage(Component.text("Teleported to lobby server.", NamedTextColor.GREEN));
-                } else {
-                    invocation.source().sendMessage(Component.text("Failed to teleport to lobby server.", NamedTextColor.RED));
-                }
-            });
-        } else {
+        // You Player?
+        if (!(invocation.source() instanceof  Player player)) {
             invocation.source().sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
+            return;
         }
+        // Is there a "lobby" server?
+        RegisteredServer toConnect = this.server.getServer("lobby").orElse(null);
+        if (toConnect == null) {
+            player.sendMessage(Component.text("Lobby server not found.", NamedTextColor.RED));
+            return;
+        }
+        // Is your server == “lobby”?
+        if (player.getCurrentServer().isPresent() && player.getCurrentServer().get().getServerInfo().getName().equals("lobby")) {
+            player.sendMessage(Component.text("You are already connected to the lobby server.", NamedTextColor.RED));
+            return;
+        }
+        // Connect to server "lobby"
+        player.createConnectionRequest(toConnect).connect().thenAccept(result -> {
+            if (result.isSuccessful()) {
+                player.sendMessage(Component.text("Teleported to lobby server.", NamedTextColor.GREEN));
+            } else {
+                player.sendMessage(Component.text("Failed to teleport to lobby server.", NamedTextColor.RED));
+            }
+        });
     }
 
     /**
